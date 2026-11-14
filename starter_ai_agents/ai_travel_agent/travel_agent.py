@@ -4,7 +4,7 @@ from agno.run.agent import RunOutput
 from agno.tools.serpapi import SerpApiTools
 import streamlit as st
 import re
-from agno.models.openai import OpenAIChat
+from agno.models.groq import Groq
 from icalendar import Calendar, Event
 from datetime import datetime, timedelta
 
@@ -60,23 +60,23 @@ def generate_ics_content(plan_text:str, start_date: datetime = None) -> bytes:
 
 # Set up the Streamlit app
 st.title("AI Travel Planner ")
-st.caption("Plan your next adventure with AI Travel Planner by researching and planning a personalized itinerary on autopilot using GPT-4o")
+st.caption("Plan your next adventure with AI Travel Planner by researching and planning a personalized itinerary on autopilot using Groq")
 
 # Initialize session state to store the generated itinerary
 if 'itinerary' not in st.session_state:
     st.session_state.itinerary = None
 
-# Get OpenAI API key from user
-openai_api_key = st.text_input("Enter OpenAI API Key to access GPT-4o", type="password")
+# Get Groq API key from user
+groq_api_key = st.text_input("Enter Groq API Key", type="password")
 
 # Get SerpAPI key from the user
 serp_api_key = st.text_input("Enter Serp API Key for Search functionality", type="password")
 
-if openai_api_key and serp_api_key:
+if groq_api_key and serp_api_key:
     researcher = Agent(
         name="Researcher",
         role="Searches for travel destinations, activities, and accommodations based on user preferences",
-        model=OpenAIChat(id="gpt-4o", api_key=openai_api_key),
+        model=Groq(id="openai/gpt-oss-120b", api_key=groq_api_key),
         description=dedent(
             """\
         You are a world-class travel researcher. Given a travel destination and the number of days the user wants to travel for,
@@ -96,7 +96,7 @@ if openai_api_key and serp_api_key:
     planner = Agent(
         name="Planner",
         role="Generates a draft itinerary based on user preferences and research results",
-        model=OpenAIChat(id="gpt-4o", api_key=openai_api_key),
+        model=Groq(id="openai/gpt-oss-120b", api_key=groq_api_key),
         description=dedent(
             """\
         You are a senior travel planner. Given a travel destination, the number of days the user wants to travel for, and a list of research results,
